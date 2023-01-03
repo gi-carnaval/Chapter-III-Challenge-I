@@ -1,1 +1,15 @@
-// TODO
+.headerContainer {
+  height: 105px;
+  background: #1A1D23;
+  padding: 0 370px;
+  display: flex;
+  align-items: center;
+
+  .headerContent{
+    display: block;
+    img {
+      height: 25px;
+      object-fit: cover;
+    }
+  }
+}

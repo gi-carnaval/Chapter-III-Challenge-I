@@ -1,12 +1,13 @@
 .headerContainer {
   height: 105px;
   background: #1A1D23;
-  padding: 0 370px;
   display: flex;
   align-items: center;
 
   .headerContent{
     display: block;
+    width: 700px;
+    margin: 0 auto;
     img {
       height: 25px;
       object-fit: cover;

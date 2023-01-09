@@ -29,12 +29,11 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
   const formatedPosts = postsPagination.results.map(post => {
     return {
       ...post,
-      first_publication_date: new Date(post.first_publication_date).toLocaleDateString(
-        'pt-BR',
+      first_publication_date: format(
+        new Date(post.first_publication_date),
+        'dd MMM yyyy',
         {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric',
+          locale: ptBR,
         }
       ),
     };

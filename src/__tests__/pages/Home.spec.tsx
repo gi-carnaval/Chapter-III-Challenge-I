@@ -126,7 +126,7 @@ describe('Home', () => {
     );
   });
 
-  it('should be able to render posts documents info', () => {
+  it('should be able to render posts documents info', async () => {
     const postsPagination = mockedGetByTypeReturn;
 
     render(<App postsPagination={postsPagination} />);

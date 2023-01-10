@@ -1,4 +1,4 @@
-import ptBR from 'date-fns/esm/locale/pt-BR/index.js';
+import { ptBR } from 'date-fns/locale';
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -26,7 +26,7 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 export default function Home({ postsPagination }: HomeProps): JSX.Element {
-  const formatedPosts = postsPagination.results.map(post => {
+  const formattedPosts = postsPagination.results.map(post => {
     return {
       ...post,
       first_publication_date: format(
@@ -38,35 +38,55 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
       ),
     };
   });
-  const [posts, setPosts] = useState<Post[]>(formatedPosts);
+  const [posts, setPosts] = useState<Post[]>(formattedPosts);
   const [nextPage, setNextPage] = useState(postsPagination.next_page);
 
   const handleNextPage = async (): Promise<void> => {
-    const postResponse = await fetch(nextPage).then(response =>
-      response.json()
-    );
-    setNextPage(postResponse.data.next_page);
-    // setPosts(...posts, ...postResponse.data.)
+    if (nextPage === null) return;
+
+    fetch(nextPage)
+      .then(response => response.json())
+      .then(newPosts => {
+        const postsUpdated: Post[] = newPosts.results.map(post => {
+          return {
+            uid: post.uid,
+            first_publication_date: format(
+              new Date(post.first_publication_date),
+              'dd MMM yyyy',
+              {
+                locale: ptBR,
+              }
+            ),
+            data: {
+              title: post.data.title,
+              subtitle: post.data.subtitle,
+              author: post.data.author,
+            },
+          };
+        });
+        setPosts([...posts, ...postsUpdated]);
+        setNextPage(newPosts.next_page);
+      });
   };
   return (
     <main className={styles.container}>
       <div className={styles.posts}>
         {posts?.map(post => (
           <Link key={post.uid} href={`/post/${post.uid}`}>
-            <strong>{post.data.title}</strong>
-            <p className={styles.postSubtitle}>{post.data.subtitle}</p>
-            <div className={styles.postInfo}>
-              <time className={styles.createdAt}>
-                <FiCalendar className={styles.icon} />
-                {post.first_publication_date
-                  .replaceAll(/de /g, '')
-                  .replace('.', '')}
-              </time>
-              <span className={styles.author}>
-                <FiUser className={styles.icon} />
-                {post.data.author}
-              </span>
-            </div>
+            <a href={`/post/${post.uid}`}>
+              <strong>{post.data.title}</strong>
+              <p className={styles.postSubtitle}>{post.data.subtitle}</p>
+              <div className={styles.postInfo}>
+                <time className={styles.createdAt}>
+                  <FiCalendar className={styles.icon} />
+                  {post.first_publication_date}
+                </time>
+                <span className={styles.author}>
+                  <FiUser className={styles.icon} />
+                  {post.data.author}
+                </span>
+              </div>
+            </a>
           </Link>
         ))}
         {nextPage ? (
